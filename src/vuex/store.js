@@ -1,0 +1,46 @@
+import Vue from 'vue'
+import Vuex from 'vuex'
+import * as actions from './actions'
+import * as getters from './getters'
+
+Vue.use(Vuex)
+
+// 应用初始状态
+const state = {
+    count: 10,
+    //权限
+    permission: {
+        active: false, //请求状态
+        menus: [],
+        currentUrl:""
+    }
+}
+
+// 定义所需的 mutations
+const mutations = {
+    INCREMENT(state) {
+        state.count++
+    },
+    DECREMENT(state) {
+        state.count--
+    },
+    setPermission(state, p) {
+        if(p.menus) {
+            state.permission.active = true;
+            state.permission.menus = p.menus;
+        }
+    },
+    currentUrl(state, url){
+        //console.log(url);
+        if(url)
+        state.permission.currentUrl = url;
+    }
+}
+
+// 创建 store 实例
+export default new Vuex.Store({
+    actions,
+    getters,
+    state,
+    mutations
+})
