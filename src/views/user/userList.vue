@@ -27,10 +27,12 @@
 			</el-table-column>
 			<el-table-column prop="phone" label="电话" >
 			</el-table-column>
+			<el-table-column prop="cityName" label="代理城市" >
+			</el-table-column>
 			<!--<el-table-column prop="email" label="邮箱">
 			</el-table-column>-->
-			<el-table-column prop="logins" label="登录次数">
-			</el-table-column>
+			<!--<el-table-column prop="logins" label="登录次数">
+			</el-table-column>-->
 			<el-table-column prop="status" label="状态" :formatter="statusFormat">
 			</el-table-column>
 			<el-table-column prop="level" label="类型" :formatter="levelFormat">
