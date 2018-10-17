@@ -27,20 +27,22 @@
 			</el-table-column>
 			<el-table-column prop="phone" label="电话" >
 			</el-table-column>
-			<el-table-column prop="email" label="邮箱">
-			</el-table-column>
+			<!--<el-table-column prop="email" label="邮箱">
+			</el-table-column>-->
 			<el-table-column prop="logins" label="登录次数">
 			</el-table-column>
 			<el-table-column prop="status" label="状态" :formatter="statusFormat">
 			</el-table-column>
-			<el-table-column prop="isAdmin" label="是否超管" :formatter="adminFormat">
+			<el-table-column prop="level" label="类型" :formatter="levelFormat">
 			</el-table-column>
-			<el-table-column prop="createDate" label="创建时间" :formatter="dateFormat">
+			<el-table-column prop="admin" label="超管" :formatter="adminFormat">
 			</el-table-column>
+			<!--<el-table-column prop="createDate" label="创建时间" :formatter="dateFormat">
+			</el-table-column>-->
 			<el-table-column label="操作" width="200">
 				<template scope="scope">
 					<el-button size="small" :disabled="editOprt" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-					<el-button size="small" :disabled="authcOprt" @click="handleRole(scope.row.id,scope.row.isAdmin)">角色</el-button>
+					<el-button size="small" :disabled="authcOprt" @click="handleRole(scope.row.id,scope.row.admin,scope.row.level)">角色</el-button>
 					<el-button type="danger" :disabled="deleteOprt" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
@@ -68,6 +70,39 @@
 				<el-form-item label="邮箱" prop="email">
 					<el-input v-model="editForm.email"></el-input>
 				</el-form-item>
+				 <el-form-item label="类型" prop="level" v-if="showLevel">
+			         <el-select v-model="editForm.level" placeholder="请选择" @change="changeLevel">
+				          <el-option
+				            v-for="item in levels"
+				            :key="item.value"
+				            :label="item.text"
+				            :value="item.value">
+				          </el-option>
+		          	</el-select>
+        		</el-form-item>
+        		<el-form-item label="省份" v-if="showProvince">
+					<el-select  v-model="editForm.province" placeholder="请选择" @change="initCitys"  v-if="showProvince">
+						<el-option
+								v-for="item in provinces"
+								:key="item.index"
+								:label="item.name"
+								:value="item.adcode">
+							<span style="float: left">
+								{{ item.name }}
+							</span>
+						</el-option>
+					</el-select>
+					<span  v-if="showProvince">城市 </span>
+					<el-select v-model="addForm.citycode"  v-if="showProvince" placeholder="请选择">
+						<el-option
+								v-for="item in citys"
+								:key="item.index"
+								:label="item.name"
+								:value="item.citycode">
+							<span style="float: left">{{ item.name }}</span>
+						</el-option>
+					</el-select>
+				</el-form-item>
 				<el-form-item label="状态">
 					<el-radio-group v-model="editForm.status" :disabled="editForm.statusDisabled">
 						<el-radio class="radio" :label="0" >冻结</el-radio>
@@ -92,6 +127,40 @@
 				</el-form-item>
 				<el-form-item label="姓名" prop="realName">
 					<el-input v-model="addForm.realName"></el-input>
+				</el-form-item>
+				<el-form-item label="类型" prop="level" v-if="showLevel">
+		        	<el-select v-model="addForm.level" placeholder="请选择" @change="changeLevel">
+			          <el-option
+			            v-for="item in levels"
+			            :key="item.value"
+			            :label="item.text"
+			            :value="item.value">
+			          </el-option>
+		          	</el-select>
+        		</el-form-item>
+        		
+        		<el-form-item label="省份" v-if="showProvince">
+					<el-select  v-model="addForm.province" placeholder="请选择" @change="initCitys"  v-if="showProvince">
+						<el-option
+								v-for="item in provinces"
+								:key="item.index"
+								:label="item.name"
+								:value="item.adcode">
+							<span style="float: left">
+								{{ item.name }}
+							</span>
+						</el-option>
+					</el-select>
+					<span  v-if="showProvince">城市 </span>
+					<el-select v-model="addForm.citycode" v-if="showProvince" placeholder="请选择">
+						<el-option
+								v-for="item in citys"
+								:key="item.index"
+								:label="item.name"
+								:value="item.citycode">
+							<span style="float: left">{{ item.name }}</span>
+						</el-option>
+					</el-select>
 				</el-form-item>
 				<el-form-item label="手机" prop="phone">
 					<el-input v-model="addForm.phone"></el-input>
@@ -133,7 +202,7 @@
 	import util from '../../common/js/util';
 	import moment from '../../common/js/moment';
 	import NProgress from 'nprogress';
-	import { listUser,addUser,deleteUser,editUser,listRole,authcUser,userRole} from '../../api/api';
+	import { listUser,addUser,deleteUser,editUser,listAllRole,authcUser,userRole,getCitys,getProvinces} from '../../api/api';
 
 	export default {
 		data() {
@@ -146,6 +215,11 @@
 				checkRoles:[],
 				editUserId:"",
 				total: 0,
+				showLevel:true,
+				showCity:false,
+				showProvince:false,
+				provinces:[],
+				citys:[],
 				pageIndex: 1,
 				pageSize: 20,
 				listLoading: false,
@@ -157,6 +231,9 @@
 					realName: [
 						{ required: true, message: '请输入姓名', trigger: 'blur' }
 						
+					],
+					citycode:[
+						{ required: true, message: '请选择城市', trigger: 'blur' }
 					],
 					phone: [
 						{ required: true, message: '请输入手机号码', trigger: 'blur' },
@@ -183,15 +260,30 @@
 					phone:'',
 					status:0,
 					realName:'',
+					level:1,
+					province:'',
+					citycode:'',
+					cityName:'',
 					statusDisabled:false
 				},
-
+				levels:[
+			         {
+			             text:'系统用户',
+			             value:1 
+			          },{
+			             text:'代理用户',
+			             value:2 
+			          }
+		        ],
 				addFormVisible: false,//新增界面是否显示
 				addLoading: false,
 				addFormRules: {
 					name: [
 						{ required: true, message: '请输入账号', trigger: 'blur' }
 						
+					],
+					citycode:[
+						{ required: true, message: '请选择城市', trigger: 'blur' }
 					],
 					password: [
 						{ required: true, message: '请输入密码', trigger: 'blur' }
@@ -227,6 +319,10 @@
 					email:'',
 					password:'',
 					phone:'',
+					level:1,
+					cityName:'',
+					citycode:'',
+					province:'',
 					status:0,
 					realName:''
 				}
@@ -286,25 +382,29 @@
 			//显示编辑界面
 			handleEdit: function (index, row) {
 				this.editForm.statusDisabled=false;
-				this.editForm = Object.assign({}, row);
-				if(row.isAdmin=='1'){
+				this.editForm = Object.assign(this.editForm, row);
+				if(row.admin=='1'){
 					this.editForm.statusDisabled=true;
+				}
+				if(row.level==2){
+					this.showProvince=true;
+				}else{
+					this.showProvince=false;
+				}
+				if(!row.citycode||!row.province){
+					this.editForm.province=this.provinces[0].adcode;
+					this.initCitys(this.editForm.province);
 				}
 				this.editFormVisible = true;
 			},
 			//显示新增界面
 			handleAdd: function () {
+				this.showProvince = false;
 				this.addFormVisible = true;
-				this.addForm = {
-					email:'',
-					phone:'',
-					status:0,
-					realName:''
-				};
 			},
 			//显示用户授权界面
-			handleRole: function (id,isAdmin) {
-				if(isAdmin=='1'){
+			handleRole: function (id,admin,level) {
+				if(admin){
 					this.$message({
 						message: '超管拥有所有权限',
 						type: 'warning'
@@ -314,7 +414,10 @@
 				this.editUserId = id;
 				this.checkRoles = [];
 				let para = {status:1};
-				listRole(para).then((body) => {
+				if(level!=1){
+					para.level = level;
+				}
+				listAllRole(para).then((body) => {
 					if(body){
 						for(let i=0;i<body.list.length;i++){
 							body.list[i].label = body.list[i].name;
@@ -345,6 +448,13 @@
 							this.editLoading = true;
 							NProgress.start();
 							let para = Object.assign({}, this.editForm);
+							if(this.editForm.citycode){
+								for (let i = 0; i < this.citys.length; i++) {
+									if(this.citys[i].citycode==this.editForm.citycode){
+		                                para.cityName = this.citys[i].name;
+									}
+		                        }
+							}
 							para.createDate=null;
 							editUser(para).then((body) => {
 								this.editLoading = false;
@@ -370,6 +480,13 @@
 						this.$confirm('确认提交吗？', '提示', {}).then(() => {
 							this.addLoading = true;
 							NProgress.start();
+							if(this.addForm.citycode){
+								for (let i = 0; i < this.citys.length; i++) {
+									if(this.citys[i].citycode==this.addForm.citycode){
+		                                para.cityName = this.citys[i].name;
+									}
+		                        }
+							}
 							let para = Object.assign({}, this.addForm);
 							addUser(para).then((body) => {
 								this.addLoading = false;
@@ -439,6 +556,33 @@
 
 				});
 			},
+			//获取区域
+            initProvinces:function() {
+                getProvinces().then((body) => {
+                    if(body){
+                    	this.provinces=body;
+                    	this.addForm.province=this.provinces[0].adcode;
+                    	this.initCitys(this.provinces[0].adcode);
+                    }
+                });
+            },
+            initCitys:function(adcode) {
+				let param ={adcode:adcode};
+                getCitys(param).then((body) => {
+                    if(body){
+                    	this.citys=body;
+                    	this.addForm.citycode=body[0].citycode;
+                    	this.editForm.citycode=body[0].citycode;
+                    }
+                });
+            },
+            changeLevel:function(type){
+            	if(type==1){
+            		this.showProvince=false;
+            	}else if(type==2){
+            		this.showProvince=true;
+            	}
+            },
 			  //时间格式化 
 		      dateFormat:function(row, column) { 
 		        var date = row[column.property]; 
@@ -458,15 +602,27 @@
 		      }  ,
 		      //状态格式化 
 		      adminFormat:function(row, column) { 
-		        var isAdmin = row[column.property]; 
-			     if (isAdmin == '1') { 
+		        var admin = row[column.property]; 
+			     if (admin) { 
 			       return "是"; 
 			     }else{
 			       return "否"; 
 			     }
+		      }   ,
+		      //类型
+		      levelFormat:function(row, column) { 
+		        var level = row[column.property]; 
+			     if (level==1) { 
+			       return "系统用户"; 
+			     }else if (level==2) {
+			       return "代理用户"; 
+			     }else{
+			     	return "未知"; 
+			     }
 		      }  
 		},
 		mounted() {
+			this.initProvinces();
 			this.getUsers();
 		},
 		computed: {  

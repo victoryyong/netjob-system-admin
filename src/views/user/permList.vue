@@ -15,6 +15,16 @@
         <el-form-item label="权限码" prop="code" v-if="showCode">
           <el-input v-model="editForm.code"></el-input>
         </el-form-item>
+        <el-form-item label="级别" prop="level" v-if="showLevel">
+          <el-select v-model="editForm.level" placeholder="请选择">
+          <el-option
+            v-for="item in levels"
+            :key="item.value"
+            :label="item.text"
+            :value="item.value">
+          </el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="图标" prop="icon" v-if="showIcon">
           <i :class="editForm.icon"></i>
           <el-select v-model="editForm.icon"  placeholder="请选择">
@@ -68,6 +78,16 @@
         </el-form-item>
         <el-form-item label="权限码" prop="code" v-if="showCode">
           <el-input v-model="addForm.code"></el-input>
+        </el-form-item>
+        <el-form-item label="级别" prop="level" v-if="showLevel">
+          <el-select v-model="addForm.level" placeholder="请选择">
+          <el-option
+            v-for="item in levels"
+            :key="item.value"
+            :label="item.text"
+            :value="item.value">
+          </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="图标" prop="icon" v-if="showIcon">
           <i :class="addForm.icon"></i>
@@ -139,6 +159,7 @@
         icons:[],
         showCode:true,
         showUrl:true,
+        showLevel:true,
         showIcon:true,
         perms: [],
         types:[
@@ -155,6 +176,15 @@
              value:3 ,
              disabled:false
           }
+        ],
+        levels:[
+	         {
+	             text:'系统级别',
+	             value:1 
+	          },{
+	             text:'代理级别',
+	             value:2 
+	          }
         ],
         total: 0,
         currentPage: 1,
@@ -234,8 +264,9 @@
           name:'',
           code:'',
           type:1,
+          level:1,
           status:0,
-            icon:'',
+          icon:'',
           parentId:null,
           sort:'10',
           url:'',
@@ -291,10 +322,12 @@
           this.expends=expendIds;
         this.editFormRules.url[0].required = true;
         this.editFormRules.code[0].required = true;
+        this.showLevel=false;
         if(row.type==1){
           this.editFormRules.code[0].required = false;
           this.showCode = false;
           this.showUrl = false;
+          this.showLevel=true;
           this.showIcon = true;
            this.editFormRules.url[0].required = false;
         }else if(row.type==2){
@@ -322,6 +355,7 @@
           name:'',
           code:'',
           type:1,
+          level:1,
           status:0,
           sort:'10',
           url:'',
@@ -329,6 +363,7 @@
           selectDisabled:true
         };
           this.expends=expendIds;
+          this.showLevel = false;
         if(type==1){
           this.types[0].disabled=true;
           this.addForm.type=2;
@@ -358,6 +393,7 @@
           this.types[0].disabled=false;
           this.types[1].disabled=false;
           this.showCode = false;
+          this.showLevel=true;
           this.showUrl = false;
           this.showIcon = true;
         }

@@ -150,6 +150,7 @@ export const changeUserPwd = params => { return sendpost('user/changePwd', param
 
 
 export const listRole = params => { return sendpost('role/list', params); };
+export const listAllRole = params => { return sendpost('role/listAll', params); };
 export const deleteRole = params => { return sendpost('role/delete', params); };
 export const editRole = params => { return sendpost('role/edit', params); };
 export const addRole = params => { return sendpost('role/add', params); };

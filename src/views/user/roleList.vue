@@ -34,7 +34,7 @@
 			<el-table-column label="操作" width="200">
 				<template scope="scope">
 					<el-button  :disabled="editOprt" size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-					<el-button  :disabled="authcOprt" size="small" @click="handlePerm(scope.row.id)">权限</el-button>
+					<el-button  :disabled="authcOprt" size="small" @click="handlePerm(scope.row.id,scope.row.level)">权限</el-button>
 					<el-button  :disabled="deleteOprt" type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
@@ -56,6 +56,16 @@
 				<el-form-item label="角色码" prop="code">
 					<el-input v-model="editForm.code"></el-input>
 				</el-form-item>
+				<el-form-item label="级别" prop="level">
+		          <el-select v-model="editForm.level" placeholder="请选择">
+		          <el-option
+		            v-for="item in levels"
+		            :key="item.value"
+		            :label="item.text"
+		            :value="item.value">
+		          </el-option>
+		          </el-select>
+        		</el-form-item>
 				<el-form-item label="状态" prop="status">
 					<el-radio-group v-model="editForm.status">
 						<el-radio class="radio" :label="0" >屏蔽</el-radio>
@@ -81,6 +91,16 @@
 				<el-form-item label="角色码" prop="code">
 					<el-input v-model="addForm.code"></el-input>
 				</el-form-item>
+				<el-form-item label="级别" prop="level">
+		          <el-select v-model="addForm.level" placeholder="请选择">
+		          <el-option
+		            v-for="item in levels"
+		            :key="item.value"
+		            :label="item.text"
+		            :value="item.value">
+		          </el-option>
+		          </el-select>
+        		</el-form-item>
 				<el-form-item label="状态" prop="status">
 					<el-radio-group v-model="addForm.status">
 						<el-radio class="radio" :label="0" >屏蔽</el-radio>
@@ -140,7 +160,15 @@
 				editRoleId:'',
 				listLoading: false,
 				sels: [],//列表选中列
-
+		        levels:[
+			         {
+			             text:'系统级别',
+			             value:1 
+			          },{
+			             text:'代理级别',
+			             value:2 
+			          }
+		        ],
 				editFormVisible: false,//编辑界面是否显示
 				permissionFormVisible:false,
 				checkPermissions:[],
@@ -160,7 +188,8 @@
 				editForm: {
 					name:'',
 					code:'',
-					status:0
+					status:0,
+					level:1
 				},
 
 				addFormVisible: false,//新增界面是否显示
@@ -179,7 +208,8 @@
 				addForm: {
 					name:'',
 					code:'',
-					status:0
+					status:0,
+					level:1
 				}
 
 			}
@@ -246,14 +276,18 @@
 					name:'',
 					code:'',
 					status:0,
+					level:1,
 					description:''
 				};
 			},
 			//显示权限配置界面
-			handlePerm: function (id) {
+			handlePerm: function (id,level) {
 				this.editRoleId = id;
 				this.checkPermissions = [];
 				let para = {};
+				if(level!=1){
+					para ={level:level};
+				}
 				listAllPerm(para).then((body) => {
 					if(body){
 						this.permissions = body.list;
