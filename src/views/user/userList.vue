@@ -95,7 +95,7 @@
 						</el-option>
 					</el-select>
 					<span  v-if="showProvince">城市 </span>
-					<el-select v-model="addForm.citycode"  v-if="showProvince" placeholder="请选择">
+					<el-select v-model="editForm.citycode"  v-if="showProvince" placeholder="请选择">
 						<el-option
 								v-for="item in citys"
 								:key="item.index"
