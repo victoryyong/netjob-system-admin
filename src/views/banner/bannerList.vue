@@ -98,7 +98,7 @@
 				<el-form-item label="排序号" prop="sort">
 					<el-input v-model="editForm.sort"></el-input>
 				</el-form-item>
-				<el-form-item label="省份">
+				<el-form-item label="省份" v-if="userLevel==1">
 					<el-select  v-model="editForm.province" placeholder="请选择" @change="initCitys" >
 						<el-option
 								v-for="item in provinces"
@@ -186,7 +186,7 @@
 				<el-form-item label="排序号" prop="sort">
 					<el-input v-model="addForm.sort"></el-input>
 				</el-form-item>
-				<el-form-item label="省份">
+				<el-form-item label="省份" v-if="userLevel==1">
 					<el-select  v-model="addForm.province" placeholder="请选择" @change="initCitys" >
 						<el-option
 								v-for="item in provinces"
@@ -244,6 +244,7 @@
 				showMenu:false,
 				provinces:[],
 				citys:[],
+				userLevel:'',
 				firsts:[],
 				seconds:[],
 				types:[
@@ -388,6 +389,7 @@
 			},
 			handleEdit(row){
 				let token  = localStorage.getItem('token');
+				console.log(this.userLevel);
 				axios.post('admin/abcdef?token='+token)
 			    .then(res => {
 			       let data = res.data;
@@ -667,6 +669,7 @@
 		mounted() {
 			this.initProvinces();
 			this.initFirstMenus();
+			this.userLevel = JSON.parse(localStorage.getItem('user')).level;
 			this.getBanners();
 		},
 		computed:{

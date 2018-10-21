@@ -95,7 +95,6 @@
 		     } else{
 		     	return "品牌秀";
 		     }
-	     	return moment(date).format("YYYY-MM-DD HH:mm:ss"); 
 	      },
 	      //结果格式化 
 	      statusFormat:function(row, column) { 

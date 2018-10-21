@@ -11,7 +11,9 @@ import SettingList from './views/setting/settingList.vue'
 import DictList from './views/dict/dictList.vue'
 import DemandAuthList from './views/authc/demandAuthList.vue'
 import ServeAuthList from './views/authc/serveAuthList.vue'
+import BrandAuthList from './views/authc/brandAuthList.vue'
 import AuthList from './views/authc/authList.vue'
+
 
 
 let routes = [
@@ -48,8 +50,9 @@ let routes = [
         name: '审核管理',
         iconCls: 'el-icon-message',//图标样式class
         children: [
-            { path: '/demandAuthList', component: DemandAuthList, name: '审核管理' },
-            { path: '/serveAuthList', component: ServeAuthList, name: '审核管理' },
+            { path: '/demandAuthList', component: DemandAuthList, name: '需求审核' },
+            { path: '/serveAuthList', component: ServeAuthList, name: '服务审核' },
+            { path: '/brandAuthList', component: BrandAuthList, name: '品牌秀审核' },
             { path: '/authList', component: AuthList, name: '审核记录' }
         ]
     },

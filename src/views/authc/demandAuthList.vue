@@ -13,18 +13,20 @@
 					<el-input v-model="filters.cityName" placeholder="市"></el-input>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" v-on:click="getServes">查询</el-button>
+					<el-button type="primary" v-on:click="getServers">查询</el-button>
 				</el-form-item>
 			</el-form>
 		</el-col>
 
 		<!--列表-->
-		<el-table :data="serves" highlight-current-row v-loading="listLoading" @selection-change="selsChange" style="width: 100%;">
+		<el-table :data="servers" highlight-current-row v-loading="listLoading" @selection-change="selsChange" style="width: 100%;">
 			<el-table-column type="selection" width="50">
 			</el-table-column>
-			<el-table-column prop="title" label="名称" >
+			<el-table-column prop="title" label="标题" >
 			</el-table-column>
-			<el-table-column prop="validity" label="有效期" >
+			<el-table-column prop="type" label="来源" >
+			</el-table-column>
+			<el-table-column prop="validity" label="作者" >
 			</el-table-column>
 			<el-table-column prop="provinceName" label="省" >
 			</el-table-column>
@@ -52,43 +54,53 @@
 		<!--详情界面-->
 		<el-dialog title="详情" v-model="detailFormVisible" :close-on-click-modal="false" size="small">
 			<el-form :model="detailForm" label-width="120px" ref="detailForm">
-				<el-form-item label="面部图：" prop="face">
-					<img :src="detailForm.face" style="width:200px;height:200px"/>
+				<el-form-item label="文件：" prop="face">
+					<div v-for="(link, index) in detailForm.links">
+						<img v-if="link.type=='image'" :src="link.src" style="width:320px;height:240px"/>
+						<video v-if="link.type=='video'" :src="link.src" controls="controls"></video>
+					</div>
 				</el-form-item>
-				<el-form-item label="名称：" prop="name">
-					{{detailForm.name}}
+				<el-form-item label="标题：" prop="title">
+					{{detailForm.title}}
 				</el-form-item>
-				<el-form-item label="类型：" prop="phone">
-					{{detailForm.kind==2?'企业':'个人'}}
+				<el-form-item label="发布时间：" prop="createDate">
+					{{detailForm.createDate|detailDateFormat}}
 				</el-form-item>
-				<el-form-item label="营业执照：" prop="phone" v-if="detailForm.kind==2">
-					{{detailForm.licence}}
+				<el-form-item label="服务时间：" prop="serveTime">
+					{{detailForm.serveTime}}
 				</el-form-item>
-				<el-form-item label="身份证：" prop="idCard">
-					{{detailForm.idCard}}
+				<el-form-item label="有效期：" prop="validity">
+					{{detailForm.validity}}
 				</el-form-item>
-				<el-form-item label="身份证正面：" prop="face">
-					<img :src="detailForm.cardImage" style="width:300px;height:200px"/>
+				<el-form-item label="报价方式：" prop="priceType">
+					{{detailForm.priceType==1?'一口价':'商议'}}
 				</el-form-item>
-				<el-form-item label="身份证反面：" prop="face">
-					<img :src="detailForm.cardReImage" style="width:300px;height:200px"/>
+				<el-form-item v-if="detailForm.priceType=='1'" label="价格：">
+					{{detailForm.price}}
 				</el-form-item>
-				<el-form-item label="手机：" prop="phone">
-					{{detailForm.phone}}
+				<el-form-item label="需求方式：" prop="workType">
+					{{detailForm.workType==1?'线上':'线下'}}
 				</el-form-item>
-				<el-form-item label="邮箱：" prop="email">
-					{{detailForm.email}}
+				<el-form-item label="结算方式：" prop="payType">
+					{{detailForm.payType==1?'线上':'线下'}}
 				</el-form-item>
-				<el-form-item label="ip：" prop="ip">
-					{{detailForm.ip}}
+				<el-form-item label="省市区：">
+					{{detailForm.provinceName}}-{{detailForm.cityName}}-{{detailForm.area}}
 				</el-form-item>
-				<el-form-item label="地址：" prop="address">
-					{{detailForm.address}}
+				<el-form-item label="详细地址：" prop="detailAddress">
+					{{detailForm.detailAddress}}
 				</el-form-item>
+				<el-form-item label="服务描述：" prop="description">
+					<el-input :disabled=true type="textarea" v-model="detailForm.description"></el-input>
+				</el-form-item>
+				<div style="float:right;margin-bottom:10px">
+					<el-button type="danger"  :disabled="authOprt" @click="authHandle(3,detailForm.id)">不通过</el-button>
+					<el-button type="success"  :disabled="authOprt" @click="authHandle(2,detailForm.id)">通过</el-button>
+				</div>
 			</el-form>
 			</el-dialog>
 
-			<el-dialog title="审核意见" v-model="authFormVisible" :close-on-click-modal="false" size="tiny">
+			<el-dialog title="审核意见" v-model="authFormVisible" :close-on-click-modal="false" size="tiny" :before-close="handleClose">
 				<el-form :model="authForm" label-width="100px" ref="authForm" :rules="authFormRules">
 				<el-form-item label="审核意见：" prop="content">
 	          		<el-input type="textarea" v-model="authForm.content"></el-input>
@@ -118,7 +130,7 @@
 					provinceName: '',
 					cityName: ''
 				},
-				serves: [],
+				servers: [],
 				total: 0,
 				currentPage: 1,
 				pageSize: 10,
@@ -147,12 +159,21 @@
 			}
 		},
 		methods: {
+			handleClose(done){
+				var videos = document.getElementsByTagName("video")
+				if(videos){
+					for(var i=0;i<videos.length;i++){
+						videos[i].pause();
+					}
+				}
+				done();
+			},
 			handleCurrentChange(val) {
 				this.currentPage = val;
-				this.getServes();
+				this.getServers();
 			},
 			//获取用户列表
-			getServes() {
+			getServers() {
 				let para = {
 					currentPage: this.currentPage,
 					pageSize:this.pageSize,
@@ -166,7 +187,7 @@
 					NProgress.done();
 					if(body){
 					 this.total = body.page.totalRows;
-					 this.serves = body.list;
+					 this.servers = body.list;
 					}
 				});
 			},
@@ -175,6 +196,17 @@
 				this.authId = row.id;
 				this.detailFormVisible = true;
 				this.detailForm = Object.assign({}, row);
+				if(this.detailForm.links){
+					var srcs=eval('(' + this.detailForm.links + ')');
+					this.detailForm.links=[];
+					for(var i=0;i<srcs.length;i++){
+						if(srcs[i].toLowerCase().indexOf('.jpg')>0||srcs[i].toLowerCase().indexOf('.jpeg')>0||srcs[i].toLowerCase().indexOf('.png')>0){
+							this.detailForm.links.push({src:srcs[i],type:'image'});
+						}else if(srcs[i].toLowerCase().indexOf('.mp4')>0){
+							this.detailForm.links.push({src:srcs[i],type:'video'});
+						}
+					}
+				}
 			},
 			//编辑
 			authHandle: function (status,authId) {
@@ -222,13 +254,14 @@
 								authServe(para).then((body) => {
 									this.authFormVisible = false;
 									this.authLoading = false;
+									this.detailFormVisible = false;
 									NProgress.done();
 									if(body){
 										this.$message({
 											message: '成功',
 											type: 'success'
 										});
-										this.getServes();
+										this.getServers();
 									}
 								});
 						}).catch(() => {
@@ -239,15 +272,25 @@
 			},
 			  //时间格式化 
 		      dateFormat:function(row, column) { 
-		        var date = row[column.property]; 
+		      	var date = "";
+    			date = row[column.property]; 
 			     if (date == undefined) { 
 			       return ""; 
 			     } 
 		     	return moment(date).format("YYYY-MM-DD HH:mm:ss"); 
 		      }
 		},
+		filters:{
+			  //时间格式化 
+		      detailDateFormat:function(column) { 
+			     if (column == undefined) { 
+			       return ""; 
+			     } 
+		     	return moment(column).format("YYYY-MM-DD HH:mm:ss"); 
+		      }
+		},
 		mounted() {
-			this.getServes();
+			this.getServers();
 		},
 		computed: {  
 	      authOprt:function(){

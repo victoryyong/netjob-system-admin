@@ -197,6 +197,9 @@ export const listServeAuth = params => { return sendpost('serve/authList', param
 export const authServe = params => { return sendpost('serve/auth', params); };
 export const listAuth = params => { return sendpost('auth/list', params); };
 
+export const listBrandAuth = params => { return sendpost('brand/authList', params); };
+export const authBrand = params => { return sendpost('brand/auth', params); };
+
 const notifyError = (msg) =>{
     vm.$notify.error({
       title: '错误',

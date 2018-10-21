@@ -266,6 +266,7 @@
 					province:'',
 					citycode:'',
 					cityName:'',
+					provinceName:'',
 					statusDisabled:false
 				},
 				levels:[
@@ -325,6 +326,7 @@
 					cityName:'',
 					citycode:'',
 					province:'',
+					provinceName:'',
 					status:0,
 					realName:''
 				}
@@ -456,6 +458,11 @@
 		                                para.cityName = this.citys[i].name;
 									}
 		                        }
+		                        for (let i = 0; i < this.provinces.length; i++) {
+									if(this.provinces[i].adcode==this.editForm.province){
+		                                para.provinceName = this.provinces[i].name;
+									}
+		                        }
 							}
 							para.createDate=null;
 							editUser(para).then((body) => {
@@ -482,14 +489,19 @@
 						this.$confirm('确认提交吗？', '提示', {}).then(() => {
 							this.addLoading = true;
 							NProgress.start();
+							let para = Object.assign({}, this.addForm);
 							if(this.addForm.citycode){
 								for (let i = 0; i < this.citys.length; i++) {
 									if(this.citys[i].citycode==this.addForm.citycode){
 		                                para.cityName = this.citys[i].name;
 									}
 		                        }
+		                        for (let i = 0; i < this.provinces.length; i++) {
+									if(this.provinces[i].adcode==this.addForm.province){
+		                                para.provinceName = this.provinces[i].name;
+									}
+		                        }
 							}
-							let para = Object.assign({}, this.addForm);
 							addUser(para).then((body) => {
 								this.addLoading = false;
 								NProgress.done();
