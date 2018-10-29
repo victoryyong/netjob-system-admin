@@ -7,7 +7,7 @@
 					<el-input v-model="filters.name" placeholder="名称"></el-input>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" v-on:click="getauths">查询</el-button>
+					<el-button type="primary" v-on:click="getAuths">查询</el-button>
 				</el-form-item>
 			</el-form>
 		</el-col>
@@ -60,6 +60,10 @@
 			}
 		},
 		methods: {
+			handleCurrentChange(val) {
+				this.currentPage = val;
+				this.getCompanys();
+			},
 			getAuths() {
 				let para = {
 					currentPage: this.currentPage,
@@ -92,8 +96,12 @@
 		       return "需求"; 
 		     } else if (type == 2){
 		     	return "服务"; 
-		     } else{
+		     } else if (type == 3){
 		     	return "品牌秀";
+		     }else if (type == 4){
+		     	return "个人审核";
+		     }else if (type == 5){
+		     	return "企业审核";
 		     }
 	      },
 	      //结果格式化 

@@ -200,6 +200,12 @@ export const listAuth = params => { return sendpost('auth/list', params); };
 export const listBrandAuth = params => { return sendpost('brand/authList', params); };
 export const authBrand = params => { return sendpost('brand/auth', params); };
 
+export const listPersonAuth = params => { return sendpost('person/authList', params); };
+export const authPerson = params => { return sendpost('person/auth', params); };
+
+export const listCompanyAuth = params => { return sendpost('company/authList', params); };
+export const authCompany = params => { return sendpost('company/auth', params); };
+
 const notifyError = (msg) =>{
     vm.$notify.error({
       title: '错误',

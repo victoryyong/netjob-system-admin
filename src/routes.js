@@ -12,6 +12,8 @@ import DictList from './views/dict/dictList.vue'
 import DemandAuthList from './views/authc/demandAuthList.vue'
 import ServeAuthList from './views/authc/serveAuthList.vue'
 import BrandAuthList from './views/authc/brandAuthList.vue'
+import PersonAuthList from './views/authc/personAuthList.vue'
+import CompanyAuthList from './views/authc/companyAuthList.vue'
 import AuthList from './views/authc/authList.vue'
 
 
@@ -53,6 +55,8 @@ let routes = [
             { path: '/demandAuthList', component: DemandAuthList, name: '需求审核' },
             { path: '/serveAuthList', component: ServeAuthList, name: '服务审核' },
             { path: '/brandAuthList', component: BrandAuthList, name: '品牌秀审核' },
+            { path: '/personAuthList', component: PersonAuthList, name: '个人审核' },
+            { path: '/companyAuthList', component: CompanyAuthList, name: '个人审核' },
             { path: '/authList', component: AuthList, name: '审核记录' }
         ]
     },
