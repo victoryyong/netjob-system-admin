@@ -15,6 +15,9 @@ import BrandAuthList from './views/authc/brandAuthList.vue'
 import PersonAuthList from './views/authc/personAuthList.vue'
 import CompanyAuthList from './views/authc/companyAuthList.vue'
 import AuthList from './views/authc/authList.vue'
+import DemandList from './views/serve/demandList.vue'
+import ServeList from './views/serve/serveList.vue'
+import MemberList from './views/member/memberList.vue'
 
 
 
@@ -76,6 +79,33 @@ let routes = [
         iconCls: 'el-icon-message',//图标样式class
         children: [
             { path: '/bannerList', component: BannerList, name: '广告管理' }
+        ]
+    },
+    {
+        path: '/',
+        component: Home,
+        name: '需求管理',
+        iconCls: 'el-icon-message',//图标样式class
+        children: [
+            { path: '/demandList', component: DemandList, name: '需求管理' }
+        ]
+    },
+    {
+        path: '/',
+        component: Home,
+        name: '服务管理',
+        iconCls: 'el-icon-message',//图标样式class
+        children: [
+            { path: '/serveList', component: ServeList, name: '服务管理' }
+        ]
+    },
+    {
+        path: '/',
+        component: Home,
+        name: '会员管理',
+        iconCls: 'el-icon-message',//图标样式class
+        children: [
+            { path: '/memberList', component: MemberList, name: '服务管理' }
         ]
     },
     {

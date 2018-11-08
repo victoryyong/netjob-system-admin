@@ -326,7 +326,7 @@
         if(row.type==1){
           this.editFormRules.code[0].required = false;
           this.showCode = false;
-          this.showUrl = false;
+          this.showUrl = true;
           this.showLevel=true;
           this.showIcon = true;
            this.editFormRules.url[0].required = false;
@@ -394,7 +394,7 @@
           this.types[1].disabled=false;
           this.showCode = false;
           this.showLevel=true;
-          this.showUrl = false;
+          this.showUrl = true;
           this.showIcon = true;
         }
         this.addFormVisible = true;
@@ -427,8 +427,14 @@
        this.addFormRules.url[0].required = true;
        this.addFormRules.code[0].required = true;
         if(type==2){
+	      this.showCode = false;
+	      this.showUrl = true;
+	      this.showIcon=true;
           this.addFormRules.code[0].required = false;
         }else if(type==3){
+          this.showCode = true;
+	      this.showUrl = false;
+	      this.showIcon=false;
           this.addFormRules.url[0].required = false;
             this.$refs[addForm].url.hidden = true;
         }

@@ -206,6 +206,13 @@ export const authPerson = params => { return sendpost('person/auth', params); };
 export const listCompanyAuth = params => { return sendpost('company/authList', params); };
 export const authCompany = params => { return sendpost('company/auth', params); };
 
+export const listServe = params => { return sendpost('serve/list', params); };
+export const deleteServe = params => { return sendpost('serve/delete', params); };
+
+
+export const listMember = params => { return sendpost('member/list', params); };
+export const editMember = params => { return sendpost('member/edit', params); };
+
 const notifyError = (msg) =>{
     vm.$notify.error({
       title: '错误',
