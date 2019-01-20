@@ -19,8 +19,8 @@
 		<el-table :data="settings" highlight-current-row v-loading="listLoading" style="width: 100%;" @selection-change="selsChange">
 			<el-table-column prop="key" width="300" label="key">
 			</el-table-column>
-			<el-table-column prop="value" label="值">
-			</el-table-column>
+			<!--<el-table-column prop="value" label="值">
+			</el-table-column>-->
 			<el-table-column prop="description" label="描述">
 			</el-table-column>
 			<el-table-column label="操作" width="300">
