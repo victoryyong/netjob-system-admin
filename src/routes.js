@@ -18,6 +18,7 @@ import AuthList from './views/authc/authList.vue'
 import DemandList from './views/serve/demandList.vue'
 import ServeList from './views/serve/serveList.vue'
 import MemberList from './views/member/memberList.vue'
+import JobTaskList from './views/jobTask/jobTaskList.vue'
 
 
 
@@ -46,6 +47,7 @@ let routes = [
             { path: '/permList', component: PermList, name: '权限管理' },
             { path: '/logList', component: LogList, name: '日志管理' },
             { path: '/dictList', component: DictList, name: '字典管理' },
+            { path: '/jobTaskList', component: JobTaskList, name: '定时管理' },
             { path: '/settingList', component: SettingList, name: '系统设置' }
         ]
     },

@@ -213,6 +213,14 @@ export const deleteServe = params => { return sendpost('serve/delete', params); 
 export const listMember = params => { return sendpost('member/list', params); };
 export const editMember = params => { return sendpost('member/edit', params); };
 
+export const addTask = params => { return sendpost('task/add', params); };
+export const listTask = params => { return sendpost('task/list', params); };
+export const editTask = params => { return sendpost('task/edit', params); };
+export const pauseTask = params => { return sendpost('task/pause', params); };
+export const startTask = params => { return sendpost('task/start', params); };
+export const deleteTask = params => { return sendpost('task/delete', params); };
+
+
 const notifyError = (msg) =>{
     vm.$notify.error({
       title: '错误',
